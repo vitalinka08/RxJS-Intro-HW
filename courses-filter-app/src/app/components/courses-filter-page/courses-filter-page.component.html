@@ -1,0 +1,90 @@
+<div class="page">
+
+  <header class="hero">
+    <span class="hero-badge">RxJS · combineLatest</span>
+    <h1 class="hero-title">Фільтр курсів</h1>
+    <p class="hero-subtitle">
+      Поєднуємо два потоки — текст пошуку та обрану категорію — через
+      <code>combineLatest</code>. Список оновлюється при зміні будь-якого з фільтрів.
+    </p>
+  </header>
+
+  <section class="filters">
+    <div class="filter-row">
+      <label class="control control-search">
+        <span class="control-label">Назва</span>
+        <span class="control-field">
+          <span class="search-icon">⌕</span>
+          <input
+            type="text"
+            [formControl]="titleControl"
+            placeholder="Шукати за назвою курсу…"
+            autocomplete="off"
+            autofocus
+          />
+          @if (titleControl.value) {
+            <button type="button" class="clear-btn" (click)="clearTitle()" aria-label="Очистити">
+              ✕
+            </button>
+          }
+        </span>
+      </label>
+
+      <label class="control control-category">
+        <span class="control-label">Категорія</span>
+        <span class="control-field">
+          <select [formControl]="categoryControl">
+            <option [value]="ALL_CATEGORIES">Усі категорії</option>
+            @for (cat of categories$ | async; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+          <span class="select-chevron">▾</span>
+        </span>
+      </label>
+
+      <button class="reset-btn" type="button" (click)="resetFilters()">
+        Скинути
+      </button>
+    </div>
+
+    @if (courses$ | async; as courses) {
+      <div class="filter-meta">
+        <span class="results-count">{{ courses.length }} результатів</span>
+        @if (titleControl.value) {
+          <span class="active-chip">назва: «{{ titleControl.value }}»</span>
+        }
+        @if (categoryControl.value !== ALL_CATEGORIES) {
+          <span class="active-chip">категорія: {{ categoryControl.value }}</span>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="results">
+    @if (courses$ | async; as courses) {
+      @if (courses.length === 0) {
+        <div class="empty">
+          <span class="empty-emoji">🌿</span>
+          <p>За обраними фільтрами нічого не знайдено.</p>
+        </div>
+      } @else {
+        <ul class="card-list">
+          @for (course of courses; track course.id) {
+            <li class="course-card">
+              <div class="course-card-head">
+                <span class="course-id">#{{ course.id }}</span>
+                <span class="course-tag">{{ course.category }}</span>
+              </div>
+              <h3 class="course-name">{{ course.title }}</h3>
+              <div class="course-foot">
+                <span class="course-duration">{{ course.duration }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    }
+  </section>
+
+</div>

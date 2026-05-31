@@ -1,0 +1,62 @@
+<div class="page">
+
+  <header class="hero">
+    <span class="hero-badge">RxJS · debounceTime · distinctUntilChanged · switchMap</span>
+    <h1 class="hero-title">Пошук курсів</h1>
+    <p class="hero-subtitle">
+      Введіть назву — список оновлюється реактивно через потік RxJS, без перезавантаження сторінки.
+    </p>
+  </header>
+
+  <div class="search-wrap">
+    <div class="search-field">
+      <span class="search-icon">⌕</span>
+      <input
+        type="text"
+        [formControl]="searchControl"
+        placeholder="Знайти курс за назвою…"
+        autocomplete="off"
+        autofocus
+      />
+      @if (searchControl.value) {
+        <button class="search-clear" type="button" (click)="clear()" aria-label="Очистити">
+          ✕
+        </button>
+      }
+    </div>
+    @if (searchControl.value) {
+      <div class="search-hint">Шукаємо «{{ searchControl.value }}»</div>
+    } @else {
+      <div class="search-hint muted">Порожнє поле — показуємо всі курси</div>
+    }
+  </div>
+
+  <section class="results">
+    @if (courses$ | async; as courses) {
+      @if (courses.length === 0) {
+        <div class="empty">
+          <span class="empty-emoji">🛰</span>
+          <p>Нічого не знайдено за запитом «{{ searchControl.value }}».</p>
+        </div>
+      } @else {
+        <ul class="card-list">
+          @for (course of courses; track course.id) {
+            <li class="course-card">
+              <div class="course-card-head">
+                <span class="course-id">#{{ course.id }}</span>
+                <span class="course-tag">{{ course.category }}</span>
+              </div>
+              <h3 class="course-name">{{ course.title }}</h3>
+              <div class="course-foot">
+                <span class="course-duration">{{ course.duration }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    } @else {
+      <p class="empty muted">Завантаження…</p>
+    }
+  </section>
+
+</div>

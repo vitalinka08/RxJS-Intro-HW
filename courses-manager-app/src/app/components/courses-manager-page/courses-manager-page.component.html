@@ -1,0 +1,88 @@
+<div class="manager-page">
+
+  <header class="page-head">
+    <div class="page-head-text">
+      <span class="eyebrow">Лабораторна · BehaviorSubject</span>
+      <h1 class="page-title">Каталог моїх курсів</h1>
+      <p class="page-subtitle">
+        Реактивний стан у пам'яті: додаєш — список оновлюється сам, видаляєш — теж.
+      </p>
+    </div>
+    <div class="head-stat">
+      <span class="head-stat-value">{{ courses().length }}</span>
+      <span class="head-stat-label">курсів у списку</span>
+    </div>
+  </header>
+
+  @if (notice(); as msg) {
+    <div class="toast">{{ msg }}</div>
+  }
+
+  <section class="panel form-panel">
+    <div class="panel-head">
+      <h2 class="panel-title">Створити курс</h2>
+      <span class="panel-hint">Усі поля обов'язкові</span>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="course-form">
+      <div class="field field-wide">
+        <label for="title">Назва</label>
+        <input id="title" formControlName="title" placeholder="Напр. Поглиблений TypeScript" />
+        @if (fieldHasError('title', 'required')) {
+          <span class="hint-error">Введіть назву курсу</span>
+        } @else if (fieldHasError('title', 'minlength')) {
+          <span class="hint-error">Мінімум 3 символи</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="category">Категорія</label>
+        <input id="category" formControlName="category" placeholder="Frontend, Backend…" />
+        @if (fieldHasError('category', 'required')) {
+          <span class="hint-error">Введіть категорію</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="duration">Тривалість</label>
+        <input id="duration" formControlName="duration" placeholder="Напр. 12 годин" />
+        @if (fieldHasError('duration', 'required')) {
+          <span class="hint-error">Введіть тривалість</span>
+        }
+      </div>
+
+      <button class="btn-primary" type="submit">
+        <span class="btn-icon">+</span>
+        <span>Додати курс</span>
+      </button>
+    </form>
+  </section>
+
+  <section class="catalog">
+    @if (courses().length === 0) {
+      <p class="state-msg">Список порожній. Додайте перший курс через форму вище.</p>
+    } @else {
+      <div class="card-grid">
+        @for (course of courses(); track course.id) {
+          <article class="course-card">
+            <header class="course-card-head">
+              <span class="course-id">№{{ course.id }}</span>
+              <span class="course-tag">{{ course.category }}</span>
+            </header>
+            <h3 class="course-name">{{ course.title }}</h3>
+            <div class="course-foot">
+              <span class="course-duration">
+                <span class="clock">◴</span>
+                {{ course.duration }}
+              </span>
+              <button class="btn-remove" type="button" (click)="remove(course)" [attr.aria-label]="'Видалити ' + course.title">
+                Видалити
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+</div>

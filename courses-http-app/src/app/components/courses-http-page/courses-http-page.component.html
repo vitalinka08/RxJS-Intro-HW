@@ -1,0 +1,63 @@
+<div class="page">
+
+  <header class="hero">
+    <span class="hero-badge">Angular · HttpClient · json-server</span>
+    <h1 class="hero-title">Каталог курсів</h1>
+    <p class="hero-subtitle">
+      Дані тягнемо через <code>HttpClient.get&lt;Course[]&gt;()</code> з мок-сервера
+      <code>http://localhost:3000/courses</code>. Реагуємо на три стани: завантаження, успіх, помилка.
+    </p>
+    <button class="reload-btn" type="button" (click)="load()" [disabled]="state().status === 'loading'">
+      ↻ Перезавантажити
+    </button>
+  </header>
+
+  @switch (state().status) {
+
+    @case ('loading') {
+      <section class="state-card state-loading">
+        <div class="spinner"></div>
+        <p>Завантаження курсів з API…</p>
+      </section>
+    }
+
+    @case ('error') {
+      <section class="state-card state-error">
+        <span class="state-icon">⚠</span>
+        <h2>Не вдалося отримати дані</h2>
+        @if (state().status === 'error') {
+          <p>{{ $any(state()).message }}</p>
+        }
+        <button class="retry-btn" type="button" (click)="load()">Спробувати ще раз</button>
+      </section>
+    }
+
+    @case ('success') {
+      @if (state().status === 'success') {
+        @let resp = $any(state());
+        <section class="results">
+          <header class="results-head">
+            <h2>Усього курсів: <span class="count">{{ resp.courses.length }}</span></h2>
+            <span class="badge">GET /courses → 200 OK</span>
+          </header>
+          <ul class="card-list">
+            @for (course of resp.courses; track course.id) {
+              <li class="course-card">
+                <div class="course-card-head">
+                  <span class="course-id">#{{ course.id }}</span>
+                  <span class="course-tag">{{ course.category }}</span>
+                </div>
+                <h3 class="course-name">{{ course.title }}</h3>
+                <div class="course-foot">
+                  <span class="course-duration">{{ course.duration }} год</span>
+                </div>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    }
+
+  }
+
+</div>
